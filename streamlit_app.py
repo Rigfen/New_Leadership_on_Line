@@ -89,7 +89,7 @@ if st.button("💾 Save Inspection"):
         st.info(f"File saved at: {save_path}")
 
 # -----------------------
-# Display File (Updated)
+# Display File (Fixed)
 # -----------------------
 if st.button("📄 View Saved Inspections"):
     save_path = os.path.join(os.getcwd(), "Leadership_on_line.csv")
@@ -99,4 +99,18 @@ if st.button("📄 View Saved Inspections"):
             # Read the saved inspections
             data = pd.read_csv(save_path, names=["Question", "Answer"])
             st.subheader("📋 Saved Inspections Log")
-            st.datafra
+            st.dataframe(data, use_container_width=True)
+
+            # Optional: download button
+            csv_data = data.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="⬇️ Download CSV File",
+                data=csv_data,
+                file_name="Leadership_on_line.csv",
+                mime="text/csv",
+            )
+
+        except Exception as e:
+            st.error(f"⚠️ Error reading saved inspections: {e}")
+    else:
+        st.warning("No saved inspections found yet.")
