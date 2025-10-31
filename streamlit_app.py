@@ -2,6 +2,7 @@ import streamlit as st
 import csv
 import os
 from datetime import datetime
+import pandas as pd
 
 # -----------------------
 # App Title and Intro
@@ -88,13 +89,14 @@ if st.button("💾 Save Inspection"):
         st.info(f"File saved at: {save_path}")
 
 # -----------------------
-# Display File
+# Display File (Updated)
 # -----------------------
 if st.button("📄 View Saved Inspections"):
-    save_path = os.path.join(os.path.expanduser("~"), "Documents", "Leadership_on_line.csv")
+    save_path = os.path.join(os.getcwd(), "Leadership_on_line.csv")
+
     if os.path.exists(save_path):
-        import pandas as pd
-        data = pd.read_csv(save_path)
-        st.dataframe(data)
-    else:
-        st.warning("No saved inspections found yet.")
+        try:
+            # Read the saved inspections
+            data = pd.read_csv(save_path, names=["Question", "Answer"])
+            st.subheader("📋 Saved Inspections Log")
+            st.datafra
