@@ -49,7 +49,7 @@ if st.button("💾 Save Inspection"):
         ppe = ppe.upper()
 
         filename = "Leadership_on_line.csv"
-        save_path = os.path.join(os.path.expanduser("~"), "Documents", filename)
+        save_path = os.path.join(os.getcwd(), filename)
 
         # Ensure CSV file exists
         file_exists = os.path.exists(save_path)
