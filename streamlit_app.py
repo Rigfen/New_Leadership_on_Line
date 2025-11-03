@@ -79,7 +79,7 @@ if st.button("💾 Save Inspection"):
             final_df = new_df
 
        # Save to Excel properly
-with pd.ExcelWriter(save_path, engine="openpyxl", mode="a" if os.path.exists(save_path) else "w") as writer:
+        with pd.ExcelWriter(save_path, engine="openpyxl", mode="a" if os.path.exists(save_path) else "w") as writer:
     final_df.to_excel(writer, index=False, sheet_name=f"Inspection_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
 
 
