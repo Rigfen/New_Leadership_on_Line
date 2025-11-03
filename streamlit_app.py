@@ -9,14 +9,14 @@ import pandas as pd
 st.set_page_config(page_title="Leadership on the Line", page_icon="✈️", layout="centered")
 st.title("Leadership on the Line ✈️")
 st.markdown("Welcome to the inspection tracker — enter your details below to begin.")
-
+st.write (" ❌ fields are required to save document")
 # -----------------------
 # User Inputs
 # -----------------------
-who = st.text_input("Who is inspecting? (Enter full name)")
-aircraft_number = st.text_input("Aircraft Tail Number (Two digits only)")
-inspection_time = st.text_input("Time of Inspection (Military time, e.g. 1530)")
-
+who = st.text_input("❌ Who is inspecting?  (Enter Last name)")
+aircraft_number = st.text_input("❌ Aircraft Tail Number  (Two digits only)")
+inspection_time = st.text_input("❌ Time of Inspection (Military time")
+st.write(" Not All boxes are reqired for submission")
 line_badge = st.selectbox("Do individuals have their line badge?", ["Yes", "No"])
 badge_showing = st.selectbox("Is it showing?", ["Yes", "No"])
 ppe = st.selectbox("PPE Worn Correctly?", ["Yes", "No", "N/A"])
@@ -38,7 +38,7 @@ comments = st.text_area("Additional Comments", placeholder="Type 'No' if none")
 # -----------------------
 if st.button("💾 Save Inspection"):
     if not who or not aircraft_number or not inspection_time:
-        st.error("Please fill out required fields: name, aircraft number, and inspection time.")
+        st.error("Please fill out required fields: Name, Aircraft Number, and Inspection Time.")
     else:
         # Format data
         date_now = datetime.now().strftime("%Y-%m-%d %H:%M")
