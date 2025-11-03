@@ -9,14 +9,15 @@ import pandas as pd
 st.set_page_config(page_title="Leadership on the Line", page_icon="✈️", layout="centered")
 st.title("Leadership on the Line ✈️")
 st.markdown("Welcome to the inspection tracker — enter your details below to begin.")
-st.write (" ❌ Fields are required to save document")
+st.write("❌ Fields are required to save document")
+
 # -----------------------
 # User Inputs
 # -----------------------
 who = st.text_input("❌ Who is inspecting?  (Enter Last name)")
 aircraft_number = st.text_input("❌ Aircraft Tail Number  (Two digits only)")
 inspection_time = st.text_input("❌ Time of Inspection (Military time)")
-st.write(" Not All boxes are reqired for submission")
+st.write("Not All boxes are required for submission")
 line_badge = st.selectbox("Do individuals have their line badge?", ["Yes", "No"])
 badge_showing = st.selectbox("Is it showing?", ["Yes", "No"])
 ppe = st.selectbox("PPE Worn Correctly?", ["Yes", "No", "N/A"])
@@ -78,10 +79,9 @@ if st.button("💾 Save Inspection"):
         else:
             final_df = new_df
 
-       # Save to Excel properly
-    with pd.ExcelWriter(save_path, engine="openpyxl", mode="a" if os.path.exists(save_path) else "w") as writer:
-        final_df.to_excel(writer, index=False, sheet_name=f"Inspection_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-
+        # ✅ Correctly save to Excel
+        with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
+            final_df.to_excel(writer, index=False, sheet_name="Inspections")
 
         st.success("✅ Inspection saved successfully!")
         st.info(f"File saved at: {save_path}")
@@ -98,14 +98,14 @@ if st.button("📄 View Saved Inspections"):
             st.subheader("📋 Saved Inspections Log")
             st.dataframe(data, use_container_width=True)
 
-            # Download Excel file button
-            excel_data = data.to_excel(index=False)
-            st.download_button(
-                label="⬇️ Download Excel File",
-                data=open(save_path, "rb").read(),
-                file_name="Leadership_on_line.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            )
+            # ✅ Fixed download button
+            with open(save_path, "rb") as f:
+                st.download_button(
+                    label="⬇️ Download Excel File",
+                    data=f,
+                    file_name="Leadership_on_line.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
 
         except Exception as e:
             st.error(f"⚠️ Error reading saved inspections: {e}")
