@@ -72,23 +72,42 @@ if st.button("💾 Save Inspection"):
             ("--- NEW ---", ""),
         ]
 
-        df = pd.DataFrame(inspection_data, columns=["Question", "Answer"])
+        from openpyxl import Workbook, load_workbook
 
-        # Check if Excel file exists
+        # -----------------------
+        # Robust Excel Save Logic
+        # -----------------------
         if os.path.exists(save_path):
-            # Load existing workbook and append
-            book = load_workbook(save_path)
-            sheet = book.active
+            try:
+                book = load_workbook(save_path)
+                sheet = book.active
+            except Exception as e:
+                # File is corrupted or not a valid Excel; rebuild it
+                st.warning("⚠️ Existing Excel file was corrupted. Recreating it now.")
+                os.remove(save_path)
+                book = Workbook()
+                sheet = book.active
+                sheet.title = "Inspections"
+                sheet.append(["Question", "Answer"])
+
+            # Append data rows
             for q, a in inspection_data:
                 sheet.append([q, a])
             book.save(save_path)
+
         else:
-            # Create new file with headers
-            with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
-                df.to_excel(writer, index=False, sheet_name="Inspections")
+            # Create new workbook from scratch
+            book = Workbook()
+            sheet = book.active
+            sheet.title = "Inspections"
+            sheet.append(["Question", "Answer"])
+            for q, a in inspection_data:
+                sheet.append([q, a])
+            book.save(save_path)
 
         st.success("✅ Inspection saved successfully!")
         st.info(f"File saved at: {save_path}")
+
 
 # -----------------------
 # Display File (Excel)
