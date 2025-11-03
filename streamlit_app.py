@@ -1,5 +1,4 @@
 import streamlit as st
-import csv
 import os
 from datetime import datetime
 import pandas as pd
@@ -38,7 +37,6 @@ comments = st.text_area("Additional Comments", placeholder="Type 'No' if none")
 # Save Button
 # -----------------------
 if st.button("💾 Save Inspection"):
-    # Validate required fields
     if not who or not aircraft_number or not inspection_time:
         st.error("Please fill out required fields: name, aircraft number, and inspection time.")
     else:
@@ -49,65 +47,61 @@ if st.button("💾 Save Inspection"):
         badge_showing = badge_showing.upper()
         ppe = ppe.upper()
 
-        filename = "Leadership_on_line.csv"
+        filename = "Leadership_on_line.xlsx"
         save_path = os.path.join(os.getcwd(), filename)
 
-        # Ensure CSV file exists
-        file_exists = os.path.exists(save_path)
+        # Prepare data for saving
+        inspection_data = {
+            "Date of Inspection": [date_now],
+            "Who spectated?": [who_upper],
+            "What Aircraft?": [aircraft_number],
+            "Time inspection was done": [inspection_time],
+            "Line Badge?": [line_badge],
+            "Showing?": [badge_showing],
+            "PPE worn correctly?": [ppe],
+            "Cleanliness Inside/Outside?": [cleanliness],
+            "Safe For Maintenance?": [safe_maint],
+            "Organized Cargo/Storage?": [organized_storage],
+            "Organized Flight Deck?": [organized_flightdeck],
+            "Forms?": [forms],
+            "FOD Check?": [fod_check],
+            "AGE Positioned correctly?": [age_pos],
+            "Comments": [comments],
+        }
 
-        with open(save_path, mode="a", newline="") as file:
-            writer = csv.writer(file)
+        new_df = pd.DataFrame(inspection_data)
 
-            # Write header if new file
-            if not file_exists:
-                writer.writerow(["Question", "Answer"])
+        # If file exists, append to it
+        if os.path.exists(save_path):
+            existing_df = pd.read_excel(save_path)
+            final_df = pd.concat([existing_df, new_df], ignore_index=True)
+        else:
+            final_df = new_df
 
-            # Write inspection data
-            inspection_data = [
-                ("Date of Inspection", date_now),
-                ("Who spectated?", who_upper),
-                ("What Aircraft?", aircraft_number),
-                ("Time inspection was done", inspection_time),
-                ("Line Badge?", line_badge),
-                ("Showing?", badge_showing),
-                ("PPE worn correctly?", ppe),
-                ("Cleanliness Inside/Outside?", cleanliness),
-                ("Safe For Maintenance?", safe_maint),
-                ("Organized Cargo/Storage?", organized_storage),
-                ("Organized Flight Deck?", organized_flightdeck),
-                ("Forms?", forms),
-                ("FOD Check?", fod_check),
-                ("AGE Positioned correctly?", age_pos),
-                ("Comments", comments),
-                ("--- NEW ---", "")
-            ]
-
-            for q, a in inspection_data:
-                writer.writerow([q, a])
+        final_df.to_excel(save_path, index=False)
 
         st.success("✅ Inspection saved successfully!")
         st.info(f"File saved at: {save_path}")
 
 # -----------------------
-# Display File (Fixed)
+# Display File (Excel)
 # -----------------------
 if st.button("📄 View Saved Inspections"):
-    save_path = os.path.join(os.getcwd(), "Leadership_on_line.csv")
+    save_path = os.path.join(os.getcwd(), "Leadership_on_line.xlsx")
 
     if os.path.exists(save_path):
         try:
-            # Read the saved inspections
-            data = pd.read_csv(save_path, names=["Question", "Answer"])
+            data = pd.read_excel(save_path)
             st.subheader("📋 Saved Inspections Log")
             st.dataframe(data, use_container_width=True)
 
-            # Optional: download button
-            csv_data = data.to_csv(index=False).encode("utf-8")
+            # Download Excel file button
+            excel_data = data.to_excel(index=False)
             st.download_button(
-                label="⬇️ Download CSV File",
-                data=csv_data,
-                file_name="Leadership_on_line.csv",
-                mime="text/csv",
+                label="⬇️ Download Excel File",
+                data=open(save_path, "rb").read(),
+                file_name="Leadership_on_line.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
         except Exception as e:
