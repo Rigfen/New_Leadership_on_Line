@@ -9,7 +9,7 @@ import pandas as pd
 st.set_page_config(page_title="Leadership on the Line", page_icon="✈️", layout="centered")
 st.title("Leadership on the Line ✈️")
 st.markdown("Welcome to the inspection tracker — enter your details below to begin.")
-st.write (" ❌ fields are required to save document")
+st.write (" ❌ Fields are required to save document")
 # -----------------------
 # User Inputs
 # -----------------------
