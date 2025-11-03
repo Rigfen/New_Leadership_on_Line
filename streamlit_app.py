@@ -74,19 +74,16 @@ if st.button("💾 Save Inspection"):
 
         df = pd.DataFrame(inspection_data, columns=["Question", "Answer"])
 
-        # If the file exists, append to it
+        # Check if Excel file exists
         if os.path.exists(save_path):
+            # Load existing workbook and append
             book = load_workbook(save_path)
-            writer = pd.ExcelWriter(save_path, engine="openpyxl")
-            writer.book = book
-            writer.sheets = {ws.title: ws for ws in book.worksheets}
-
-            # Append below existing data
-            startrow = writer.sheets["Inspections"].max_row
-            df.to_excel(writer, index=False, header=False, startrow=startrow, sheet_name="Inspections")
-            writer.close()
+            sheet = book.active
+            for q, a in inspection_data:
+                sheet.append([q, a])
+            book.save(save_path)
         else:
-            # Create new file
+            # Create new file with headers
             with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
                 df.to_excel(writer, index=False, sheet_name="Inspections")
 
