@@ -80,7 +80,7 @@ if st.button("💾 Save Inspection"):
 
        # Save to Excel properly
     with pd.ExcelWriter(save_path, engine="openpyxl", mode="a" if os.path.exists(save_path) else "w") as writer:
-    final_df.to_excel(writer, index=False, sheet_name=f"Inspection_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        final_df.to_excel(writer, index=False, sheet_name=f"Inspection_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
 
 
         st.success("✅ Inspection saved successfully!")
