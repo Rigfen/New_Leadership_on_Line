@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from datetime import datetime
 import pandas as pd
+from openpyxl import load_workbook
 
 # -----------------------
 # App Title and Intro
@@ -51,37 +52,43 @@ if st.button("💾 Save Inspection"):
         filename = "Leadership_on_line.xlsx"
         save_path = os.path.join(os.getcwd(), filename)
 
-        # Prepare data for saving
-        inspection_data = {
-            "Date of Inspection": [date_now],
-            "Who spectated?": [who_upper],
-            "What Aircraft?": [aircraft_number],
-            "Time inspection was done": [inspection_time],
-            "Line Badge?": [line_badge],
-            "Showing?": [badge_showing],
-            "PPE worn correctly?": [ppe],
-            "Cleanliness Inside/Outside?": [cleanliness],
-            "Safe For Maintenance?": [safe_maint],
-            "Organized Cargo/Storage?": [organized_storage],
-            "Organized Flight Deck?": [organized_flightdeck],
-            "Forms?": [forms],
-            "FOD Check?": [fod_check],
-            "AGE Positioned correctly?": [age_pos],
-            "Comments": [comments],
-        }
+        # Create the question/answer structure
+        inspection_data = [
+            ("Date of Inspection", date_now),
+            ("Who spectated?", who_upper),
+            ("What Aircraft?", aircraft_number),
+            ("Time inspection was done", inspection_time),
+            ("Line Badge?", line_badge),
+            ("Showing?", badge_showing),
+            ("PPE worn correctly?", ppe),
+            ("Cleanliness Inside/Outside?", cleanliness),
+            ("Safe For Maintenance?", safe_maint),
+            ("Organized Cargo/Storage?", organized_storage),
+            ("Organized Flight Deck?", organized_flightdeck),
+            ("Forms?", forms),
+            ("FOD Check?", fod_check),
+            ("AGE Positioned correctly?", age_pos),
+            ("Comments", comments),
+            ("--- NEW ---", ""),
+        ]
 
-        new_df = pd.DataFrame(inspection_data)
+        df = pd.DataFrame(inspection_data, columns=["Question", "Answer"])
 
-        # If file exists, append to it
+        # If the file exists, append to it
         if os.path.exists(save_path):
-            existing_df = pd.read_excel(save_path)
-            final_df = pd.concat([existing_df, new_df], ignore_index=True)
-        else:
-            final_df = new_df
+            book = load_workbook(save_path)
+            writer = pd.ExcelWriter(save_path, engine="openpyxl")
+            writer.book = book
+            writer.sheets = {ws.title: ws for ws in book.worksheets}
 
-        # ✅ Correctly save to Excel
-        with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
-            final_df.to_excel(writer, index=False, sheet_name="Inspections")
+            # Append below existing data
+            startrow = writer.sheets["Inspections"].max_row
+            df.to_excel(writer, index=False, header=False, startrow=startrow, sheet_name="Inspections")
+            writer.close()
+        else:
+            # Create new file
+            with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
+                df.to_excel(writer, index=False, sheet_name="Inspections")
 
         st.success("✅ Inspection saved successfully!")
         st.info(f"File saved at: {save_path}")
@@ -94,11 +101,11 @@ if st.button("📄 View Saved Inspections"):
 
     if os.path.exists(save_path):
         try:
-            data = pd.read_excel(save_path)
+            data = pd.read_excel(save_path, sheet_name="Inspections", names=["Question", "Answer"])
             st.subheader("📋 Saved Inspections Log")
             st.dataframe(data, use_container_width=True)
 
-            # ✅ Fixed download button
+            # Download Excel file button
             with open(save_path, "rb") as f:
                 st.download_button(
                     label="⬇️ Download Excel File",
