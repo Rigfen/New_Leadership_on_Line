@@ -15,7 +15,7 @@ st.write (" ❌ Fields are required to save document")
 # -----------------------
 who = st.text_input("❌ Who is inspecting?  (Enter Last name)")
 aircraft_number = st.text_input("❌ Aircraft Tail Number  (Two digits only)")
-inspection_time = st.text_input("❌ Time of Inspection (Military time")
+inspection_time = st.text_input("❌ Time of Inspection (Military time)")
 st.write(" Not All boxes are reqired for submission")
 line_badge = st.selectbox("Do individuals have their line badge?", ["Yes", "No"])
 badge_showing = st.selectbox("Is it showing?", ["Yes", "No"])
@@ -78,7 +78,10 @@ if st.button("💾 Save Inspection"):
         else:
             final_df = new_df
 
-        final_df.to_excel(save_path, index=False)
+       # Save to Excel properly
+with pd.ExcelWriter(save_path, engine="openpyxl", mode="a" if os.path.exists(save_path) else "w") as writer:
+    final_df.to_excel(writer, index=False, sheet_name=f"Inspection_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+
 
         st.success("✅ Inspection saved successfully!")
         st.info(f"File saved at: {save_path}")
