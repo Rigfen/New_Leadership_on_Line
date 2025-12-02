@@ -16,7 +16,7 @@ st.write("❌ Fields are required to save document")
 # User Inputs
 # -----------------------
 who = st.text_input("❌ Who is inspecting?  (Enter Last name)")
-aircraft_number = st.text_input("❌ Aircraft Tail Number  (Two digits only)")
+aircraft_number = st.text_input("❌ Location of Report")
 inspection_time = st.text_input("❌ Time of Inspection (Military time)")
 st.write("Not All boxes are required for submission")
 line_badge = st.selectbox("Do individuals have their line badge?", ["Yes", "No"])
